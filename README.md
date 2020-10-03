@@ -87,3 +87,96 @@ Además, se puede utilizar el stdout como stdin de otro comando de la siguiente 
 ```shell
 ./example in | ./example2
 ```
+
+
+## Paso 1: SERCOM - Errores de generacion y normas de programacion
+
+#### Problemas de estilo detectados
+> /task/student//source_unsafe/paso1_wordscounter.c:27:  Missing space before ( in while(  [whitespace/parens] [5]
+
+```c
+// faltaba un espacio entre el while y el paréntesis
+} while (state != STATE_FINISHED);
+```
+
+> /task/student//source_unsafe/paso1_wordscounter.c:41:  Mismatching spaces inside () in if  [whitespace/parens] [5]
+
+> /task/student//source_unsafe/paso1_wordscounter.c:41:  Should have zero or one spaces inside ( and ) in if  [whitespace/parens] [5]
+
+```c
+// dentro de la condición del if había un espacio de más entre el paréntesis y la condición
+if ( c == EOF) {
+```
+
+> /task/student//source_unsafe/paso1_wordscounter.c:47:  An else should appear on the same line as the preceding }  [whitespace/newline] [4]
+
+> /task/student//source_unsafe/paso1_wordscounter.c:47:  If an else has a brace on one side, it should have it on both  [readability/braces] [5]
+
+```c
+// el else tenía que estar en la misma línea que la llave de cerrar el if
+} else if (state == STATE_IN_WORD) {
+```
+
+> /task/student//source_unsafe/paso1_wordscounter.c:48:  Missing space before ( in if(  [whitespace/parens] [5]
+
+```c
+// entre el if y el paréntesis tenía que haber un espacio
+if (strchr(delim_words, c) != NULL) {
+```
+> /task/student//source_unsafe/paso1_wordscounter.c:53:  Extra space before last semicolon. If this should be an empty statement, use {} instead.  [whitespace/semicolon] [5]
+
+```c
+// entre la variable y el punto y coma no tenía que haber un espacio
+return next_state;
+```
+> /task/student//source_unsafe/paso1_wordscounter.h:5:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+
+```c
+// la línea tenía más de 80 caracteres
+// Tipo wordscounter_t: almacena la cantidad de palabras procesadas
+// de un archivo.
+```
+> /task/student//source_unsafe/paso1_main.c:12:  Almost always, snprintf is better than strcpy  [runtime/printf] [4]
+
+```c
+// en lugar del strcopy se debería usar la función snprintf
+strcpy(filepath, argv[1]);
+```
+> /task/student//source_unsafe/paso1_main.c:15:  An else should appear on the same line as the preceding }  [whitespace/newline] [4]
+
+> /task/student//source_unsafe/paso1_main.c:15:  If an else has a brace on one side, it should have it on both  [readability/braces] [5]
+
+```c
+// el else tenía que estar en la misma línea que la llave de cerrar el if
+} else {
+```
+
+#### Errores de generación del ejecutable
+```
+paso1_main.c: In function ‘main’:
+paso1_main.c:22:9: error: unknown type name ‘wordscounter_t’
+   22 |         wordscounter_t counter;
+      |         ^~~~~~~~~~~~~~
+paso1_main.c:23:9: error: implicit declaration of function ‘wordscounter_create’ [-Wimplicit-function-declaration]
+   23 |         wordscounter_create(&counter);
+      |         ^~~~~~~~~~~~~~~~~~~
+paso1_main.c:24:9: error: implicit declaration of function ‘wordscounter_process’ [-Wimplicit-function-declaration]
+   24 |         wordscounter_process(&counter, input);
+      |         ^~~~~~~~~~~~~~~~~~~~
+paso1_main.c:25:24: error: implicit declaration of function ‘wordscounter_get_words’ [-Wimplicit-function-declaration]
+   25 |         size_t words = wordscounter_get_words(&counter);
+      |                        ^~~~~~~~~~~~~~~~~~~~~~
+paso1_main.c:27:9: error: implicit declaration of function ‘wordscounter_destroy’ [-Wimplicit-function-declaration]
+   27 |         wordscounter_destroy(&counter);
+      |         ^~~~~~~~~~~~~~~~~~~~
+```
+
+El error indica que el tipo **‘wordscounter_t’** no está declarado. Para solucionarlo habría que agregar el import del archivo **paso1_wordscounter.h** donde sí está declarado.
+Las funciones a las que se está tratando de llamar tampoco han sido declaradas (se soluciona importando el mismo .h donde si están declaradas).
+
+Ambos son errores del compilador.
+
+#### ¿El sistema reportó algún WARNING? ¿Por qué?
+El sistema no reportó ningun warning porque el flag -Werror convierte a errores los warnings. Si se compila sin ese flag se puede ver cual es un error y cual es un warning.
+
+![title](images/paso1-a.png)
