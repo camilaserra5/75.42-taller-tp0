@@ -245,3 +245,25 @@ Estos errores se deben a los anteriores. En la declaración de la función no ti
 Se utiliza la función malloc pero no se ha importado de ninguna librería ni implementado. Este es un warning (se muestra como error por el flag -Werror)
 
 Son todos errores del compilador.
+
+## Paso 3: SERCOM - Errores de generacion 3
+#### Correcciones introducidas en este paso
+En el archivo **wordscounter.h** se agregaron las siguientes librerias:
+
+```c
+#include <string.h>
+#include <stdio.h>    
+```
+
+En el archivo **wordscounter.c** se agregó:
+
+```c
+#include <stdlib.h>    
+```
+
+#### Errores de generación del ejecutable
+```
+/usr/bin/ld: paso3_main.o: in function `main':
+/task/student/source_unsafe/paso3_main.c:27: undefined reference to `wordscounter_destroy'
+```
+El error se debe a que la función **wordscounter_destroy** no está implementada (error de linker).
