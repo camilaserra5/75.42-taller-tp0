@@ -389,3 +389,15 @@ Se puede ver que el último es 64, en hexadecimal. Pasado a decimal es 100, y en
 
 
 La ejecución no se detuvo en el breakpoint porque el test sólo tiene una palabra, y el breakpoint está en una línea donde se ingresa cuando se encuentra más de una palabra. Como la ejecución devolvió 0 palabras, se ve claramente que nunca se ejecutó esa línea.
+
+## Paso 6: SERCOM - Entrega exitosa
+
+#### Correcciones introducidas en este paso
+Se cambió el código de error de -1 a 1. Se refactorizó la función **wordscounter_next_state** para que cuando el estado es **STATE_IN_WORD** y el próximo caracter es **EOF** se sume una palabra. Además, los delimitadores ahora están definidos a nivel general y puede ser accedido desde cualquier lado (fuera de la función).
+
+#### Entregas realizadas
+![title](images/paso6-a.png)
+
+#### Single Word
+La primer prueba cuenta 1 palabra (el nombre del archivo). La segunda prueba también cuenta una palabra, pero esta vez la que está dentro del txt. La tercer prueba imprime el 1 dentro del archivo de salida.
+![title](images/paso6-b.png)
