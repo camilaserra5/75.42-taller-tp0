@@ -322,3 +322,70 @@ Ocurre cuando se trata de escribir memoria fuera de lo que se alocó (ya sea ant
 
 #### Segmentation fault
 Ocurre cuando se está escribiendo fuera del buffer, y además el buffer es el fin de la memoria segmentada. Es decir, se va a tratar de escribir en un lugar en donde no tenemos acceso.
+
+## Paso 5: SERCOM - Codigo de retorno y salida estandar
+#### Correcciones introducidas en este paso
+ Se cambió la inicialización del vector **delim_words**. Ahora además es una constante.
+```c
+<     char* delim_words = malloc(7 * sizeof(char));
+<     delim_words[0] = ' ';
+<     delim_words[1] = ',';
+<     delim_words[2] = '.';
+<     delim_words[3] = ';';
+<     delim_words[4] = ':';
+<     delim_words[5] = '\n';
+<     delim_words[6] = '\0';
+---
+>     const char* delim_words = " ,.;:\n";
+```
+
+También, se modificó la forma en la que se abre el archivo (no se copia más el nombre a una variable. Además, se cierra el archivo abierto al principio.
+```c
+<         char filepath[30];
+<         memcpy(filepath, argv[1], strlen(argv[1]) + 1);
+<         input = fopen(filepath, "r");
+---
+>         input = fopen(argv[1], "r");
+>         if (input != stdin)
+>             fclose(input);
+```
+#### Pruebas fallidas
+##### Invalid File
+Se esperaba un código de retorno igual a 1. No hubo errores de valgrind.
+```
+[=>] Comparando archivo_invalido/__return_code__...
+1c1
+< 255
+---
+> 1
+```
+##### Single Word
+La salida no coincide con lo esperado.
+```
+[=>] Comparando una_palabra/__stdout__...
+1c1
+< 0
+---
+> 1
+```
+
+#### Hexdump
+**¿Cuál es el último carácter del archivo input_single_word.txt?**
+
+Se puede ver que el último es 64, en hexadecimal. Pasado a decimal es 100, y en ASCII es una **d** (último caracter de **word**).
+![title](images/paso5-a.png)
+
+#### GDB
+* **info functions:** lista todas las funciones
+![title](images/paso5-b.png)
+
+* **list / list [func]:** lista las 10 líneas a continuación de donde estamos parados o de la función pasada como parámetro
+![title](images/paso5-c.png)
+
+* **break [line]:** agrega un breakpoint en la línea
+* **run [file]:** corré el programa con GDB
+* **quit:** termina la ejecuciónde GDB
+![title](images/paso5-d.png)
+
+
+La ejecución no se detuvo en el breakpoint porque el test sólo tiene una palabra, y el breakpoint está en una línea donde se ingresa cuando se encuentra más de una palabra. Como la ejecución devolvió 0 palabras, se ve claramente que nunca se ejecutó esa línea.
