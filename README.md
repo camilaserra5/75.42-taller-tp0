@@ -267,3 +267,58 @@ En el archivo **wordscounter.c** se agregó:
 /task/student/source_unsafe/paso3_main.c:27: undefined reference to `wordscounter_destroy'
 ```
 El error se debe a que la función **wordscounter_destroy** no está implementada (error de linker).
+
+## Paso 4: SERCOM - Memory Leaks y Buffer Overflows
+#### Correcciones introducidas en este paso
+Se agregó la implementación de la función **wordscounter_destroy**
+```c
+void wordscounter_destroy(wordscounter_t *self) {
+    //do nothing
+}
+```
+
+#### Pruebas fallidas
+##### TDA
+```
+==00:00:00:01.094 59== HEAP SUMMARY:
+==00:00:00:01.094 59==     in use at exit: 1,977 bytes in 216 blocks
+==00:00:00:01.094 59==   total heap usage: 218 allocs, 2 frees, 10,169 bytes allocated
+==00:00:00:01.094 59==
+==00:00:00:01.094 59== 472 bytes in 1 blocks are still reachable in loss record 1 of 2
+==00:00:00:01.094 59==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==00:00:00:01.094 59==    by 0x48D4AAD: __fopen_internal (iofopen.c:65)
+==00:00:00:01.094 59==    by 0x48D4AAD: fopen@@GLIBC_2.2.5 (iofopen.c:86)
+==00:00:00:01.094 59==    by 0x109177: main (paso4_main.c:14)
+==00:00:00:01.094 59==
+==00:00:00:01.094 59== 1,505 bytes in 215 blocks are definitely lost in loss record 2 of 2
+==00:00:00:01.094 59==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==00:00:00:01.094 59==    by 0x109301: wordscounter_next_state (paso4_wordscounter.c:35)
+==00:00:00:01.094 59==    by 0x1093B5: wordscounter_process (paso4_wordscounter.c:30)
+==00:00:00:01.094 59==    by 0x109197: main (paso4_main.c:24)
+==00:00:00:01.094 59==
+==00:00:00:01.094 59== LEAK SUMMARY:
+==00:00:00:01.094 59==    definitely lost: 1,505 bytes in 215 blocks
+==00:00:00:01.094 59==    indirectly lost: 0 bytes in 0 blocks
+==00:00:00:01.094 59==      possibly lost: 0 bytes in 0 blocks
+==00:00:00:01.094 59==    still reachable: 472 bytes in 1 blocks
+==00:00:00:01.094 59==         suppressed: 0 bytes in 0 blocks
+==00:00:00:01.094 59==
+==00:00:00:01.094 59== For lists of detected and suppressed errors, rerun with: -s
+```
+Se puede ver que se realizaron 218 allocs, pero sólo 2 frees. Hay mucha memoria alocada que nunca se liberó. En el output de valgrind se puede ver que uno de los malloc no liberados se hace en la función **wordscounter_next_state**. El otro problema es un archivo que nunca se cierra en **paso4_main.c**.
+
+##### Long Filename
+
+El error en esta prueba es un buffer overflow cuando se copia a una variable el nombre del archivo:
+```c
+memcpy(filepath, argv[1], strlen(argv[1]) + 1);
+```
+
+Esto sucede porque estamos utilizando más memoria de la que teníamos alocada (filepath es un char[30] y el nombre del texto 33). Con strncpy se podría haber solucionado ya que sólo copia hasta la longitud pasada y nunca habrá un overflow. De haber usado strncpy la prueba habría fallado ya que no se podría haber abierto el archivo para lectura.
+
+
+#### Buffer overflow
+Ocurre cuando se trata de escribir memoria fuera de lo que se alocó (ya sea antes o después de lo reservado)
+
+#### Segmentation fault
+Ocurre cuando se está escribiendo fuera del buffer, y además el buffer es el fin de la memoria segmentada. Es decir, se va a tratar de escribir en un lugar en donde no tenemos acceso.
