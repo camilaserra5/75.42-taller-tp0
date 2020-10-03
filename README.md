@@ -180,3 +180,68 @@ Ambos son errores del compilador.
 El sistema no reportó ningun warning porque el flag -Werror convierte a errores los warnings. Si se compila sin ese flag se puede ver cual es un error y cual es un warning.
 
 ![title](images/paso1-a.png)
+
+## Paso 2: SERCOM - Errores de generacion 2
+
+#### Correcciones introducidas en este paso
+En primer lugar, se cambió el uso de la función **strcpy** por **memcpy**. Además, hubo varios cambios en cuanto a las normas de codificación. Se alinearon correctamente las llaves y se eliminaron espacios innecesarios entre texto y paréntesis mencionados en el paso 1.
+
+#### Verificación de normas de programación
+Se puede ver como no hay errores en las normas de codificación.
+
+![title](images/paso2-a.png)
+
+#### Errores de generación del ejecutable
+```
+In file included from paso2_wordscounter.c:1:
+paso2_wordscounter.h:7:5: error: unknown type name ‘size_t’
+    7 |     size_t words;
+      |     ^~~~~~
+paso2_wordscounter.h:20:1: error: unknown type name ‘size_t’
+   20 | size_t wordscounter_get_words(wordscounter_t *self);
+      | ^~~~~~
+paso2_wordscounter.h:1:1: note: ‘size_t’ is defined in header ‘<stddef.h>’; did you forget to ‘#include <stddef.h>’?
+  +++ |+#include <stddef.h>
+    1 | #ifndef __WORDSCOUNTER_H__
+paso2_wordscounter.h:25:49: error: unknown type name ‘FILE’
+   25 | void wordscounter_process(wordscounter_t *self, FILE *text_file);
+      |                                                 ^~~~
+paso2_wordscounter.h:1:1: note: ‘FILE’ is defined in header ‘<stdio.h>’; did you forget to ‘#include <stdio.h>’?
+  +++ |+#include <stdio.h>
+    1 | #ifndef __WORDSCOUNTER_H__
+paso2_wordscounter.c:17:8: error: conflicting types for ‘wordscounter_get_words’
+   17 | size_t wordscounter_get_words(wordscounter_t *self) {
+      |        ^~~~~~~~~~~~~~~~~~~~~~
+In file included from paso2_wordscounter.c:1:
+paso2_wordscounter.h:20:8: note: previous declaration of ‘wordscounter_get_words’ was here
+   20 | size_t wordscounter_get_words(wordscounter_t *self);
+      |        ^~~~~~~~~~~~~~~~~~~~~~
+paso2_wordscounter.c: In function ‘wordscounter_next_state’:
+paso2_wordscounter.c:30:25: error: implicit declaration of function ‘malloc’ [-Wimplicit-function-declaration]
+   30 |     char* delim_words = malloc(7 * sizeof(char));
+      |                         ^~~~~~
+paso2_wordscounter.c:30:25: error: incompatible implicit declaration of built-in function ‘malloc’ [-Werror]
+paso2_wordscounter.c:5:1: note: include ‘<stdlib.h>’ or provide a declaration of ‘malloc’
+    4 | #include <stdbool.h>
+  +++ |+#include <stdlib.h>
+    5 |
+```
+***
+
+> **error: unknown type name ‘size_t’**
+
+>  **error: unknown type name ‘FILE’**
+
+El error indica que el tipo no está declarado. Los tipos 'size\_t' y 'FILE' no están declarados en ningún lado. Ambos habría que declararlos o importarlos de alguna librería. Son todos errores.
+
+>  **error: conflicting types for ‘wordscounter_get_words’**
+
+>  **note: previous declaration of ‘wordscounter_get_words’ was here**
+
+Estos errores se deben a los anteriores. En la declaración de la función no tiene declarado el tipo de dato de retorno, entonces el compilador muestra este error.
+
+>  **implicit declaration of function ‘malloc’**
+
+Se utiliza la función malloc pero no se ha importado de ninguna librería ni implementado. Este es un warning (se muestra como error por el flag -Werror)
+
+Son todos errores del compilador.
