@@ -8,6 +8,17 @@
 
 _________________
 ## Introducción
+El objectivo de este trabajo es el uso y entendimiento de las herramientas de desarrollo, y familiarizarse con el sistema de entrega SERCOM.
+
+El informe está dividido acorde a los distintos pasos que se fueron realizando. En cada uno se detalla el análisis y las capturas.
+
+- [Paso 0: Entorno de trabajo](#paso-0-entorno-de-trabajo)
+- [Paso 1: SERCOM - Errores de generacion y normas de programacion](#paso-1-sercom---errores-de-generacion-y-normas-de-programacion)
+- [Paso 2: SERCOM - Errores de generacion 2](#paso-2-sercom---errores-de-generacion-2)
+- [Paso 3: SERCOM - Errores de generacion 3](#paso-3-sercom---errores-de-generacion-3)
+- [Paso 4: SERCOM - Memory Leaks y Buffer Overflows](#paso-4-sercom---memory-leaks-y-buffer-overflows)
+- [Paso 5: SERCOM - Codigo de retorno y salida estandar](#paso-5-sercom---codigo-de-retorno-y-salida-estandar)
+- [Paso 6: SERCOM - Entrega exitosa](#paso-6-sercom---entrega-exitosa)
 
 ## Paso 0: Entorno de trabajo
 Se realizó un programa en ISO C que imprime por consola “Hola Mundo” y retorna 0. Se muestra la ejecución del mismo con y sin valgrind.
